@@ -1,0 +1,16 @@
+on: [push]
+  
+jobs:
+  build_and_static_analysis:
+    runs-on: ubuntu-latest
+    container:
+      image: samloveswater/msp430-gcc-9.3.1.11:latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Build   
+        run: make
+      
+      - name: Run cppcheck
+        run: make cppcheck
