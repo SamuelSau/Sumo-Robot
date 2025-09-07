@@ -19,8 +19,8 @@ CPPCHECK = cppcheck
 # Files
 TARGET = $(BIN_DIR)/blink
 
-SOURCES = main.c \
-		  led.c
+SOURCES = src/main.c \
+	  src/drivers/led.c
 
 OBJECT_NAMES = $(SOURCES:.c=.o)
 OBJECTS = $(patsubst %,$(OBJ_DIR)/%,$(OBJECT_NAMES))
