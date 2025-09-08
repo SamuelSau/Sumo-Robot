@@ -1,5 +1,4 @@
 on: [push]
-  
 jobs:
   build_and_static_analysis:
     runs-on: ubuntu-latest
@@ -8,12 +7,6 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
-
-      - name: Run clang format
-        run: make format && git diff --quiet
-
-      - name: Build
-        run: TOOLS_PATH=~/Dev/Tools make
-      
-      - name: Run cppcheck
-        run: make cppcheck
+      - run: make format && git diff --quiet
+      - run: make cppcheck
+      - run: TOOLS_PATH=/home/ubuntu/dev/tools make

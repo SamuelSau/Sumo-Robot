@@ -1,4 +1,4 @@
-FROM samloveswater/msp430-gcc-9.3.1.11:latest
+FROM ubuntu:24.04
 
 #Install necessary packages
 RUN DEBIAN_FRONTEND=noninteractive \
@@ -11,4 +11,5 @@ RUN useradd -rm -d /home/ubuntu -s /bin/bash -g root -G sudo \
 	-u 1001 ubuntu
 USER ubuntu
 WORKDIR /home/ubuntu
+
 
