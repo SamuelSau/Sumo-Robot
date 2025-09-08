@@ -9,7 +9,10 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: Build  
+      - name: Run clang format
+        run: make format && git diff --quiet
+
+      - name: Build
         run: TOOLS_PATH=~/Dev/Tools make
       
       - name: Run cppcheck
