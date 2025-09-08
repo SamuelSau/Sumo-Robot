@@ -27,8 +27,22 @@ CPPCHECK = cppcheck
 # Files
 TARGET = $(BIN_DIR)/nsumo
 
+DRIVERS_SRC = $(addprefix src/drivers/,\
+				uart.c \
+				i2c.c \
+				)
+APP_SRC = $(addprefix src/app/,\
+			drive.c \
+	  	  	enemy.c \
+			)
+TEST_SRC = $(addprefix src/test/,\
+		     test.c \
+			 )
 SOURCES = src/main.c \
-	  
+		  $(DRIVERS_SRC) \
+		  $(APP_SRC) \
+		  $(TEST_SRC)
+
 OBJECT_NAMES = $(SOURCES:.c=.o)
 OBJECTS = $(patsubst %,$(OBJ_DIR)/%,$(OBJECT_NAMES))
 
@@ -64,4 +78,5 @@ cppcheck:
 	@$(CPPCHECK) --quiet --enable=all --error-exitcode=1 \
 	--inline-suppr \
 	-I $(INCLUDE_DIRS) \
-	$(SOURCES)
+	$(SOURCES) \
+	-i external/printf
