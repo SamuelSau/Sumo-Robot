@@ -3,5 +3,4 @@
 
 #define UNUSED(x) (void)(x)
 
-
-#endif //DEFINES_H	
+#endif // DEFINES_H
