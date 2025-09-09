@@ -1,5 +1,4 @@
 on: [push]
-  
 jobs:
   build_and_static_analysis:
     runs-on: ubuntu-latest
@@ -8,9 +7,13 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
-
-      - name: Build  
-        run: TOOLS_PATH=~/Dev/Tools make
-      
-      - name: Run cppcheck
-        run: make cppcheck
+      - name: Debug Git repo
+        run: |
+          echo "Current directory: $(pwd)"
+          ls -la
+          cat .git || echo ".git is a directory here"
+      - name: Fix repo ownership
+        run: chown -R $(id -u):$(id -g) $GITHUB_WORKSPACE
+      - run: make format && git diff --quiet
+      - run: make cppcheck
+      - run: TOOLS_PATH=/home/ubuntu/dev/tools make
