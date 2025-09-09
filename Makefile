@@ -31,8 +31,9 @@ TARGET = $(BIN_DIR)/nsumo
 SOURCES_WITH_HEADERS = \
 	src/drivers/uart.c \
 	src/drivers/i2c.c \
+	src/drivers/io.c \
 	src/app/drive.c \
-	src/app/enemy.c
+	src/app/enemy.c \
 
 SOURCES = \
 	src/main.c \
