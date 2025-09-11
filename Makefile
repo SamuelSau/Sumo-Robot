@@ -29,7 +29,8 @@ FORMAT = clang-format
 TARGET = $(BIN_DIR)/nsumo
 
 SOURCES_WITH_HEADERS = \
-	src/drivers/uart.c \
+	src/drivers/mcu_init.c \
+        src/drivers/uart.c \
 	src/drivers/i2c.c \
 	src/drivers/io.c \
 	src/app/drive.c \
@@ -50,7 +51,7 @@ OBJECTS = $(patsubst %,$(OBJ_DIR)/%,$(OBJECT_NAMES))
 CPPCHECK_INCLUDES = ./src
 CPPCHECK_IGNORE = external/printf
 CPPCHECK_FLAGS = \
-	--quiet --enable=all --error-exitcode=1 \
+	--quiet --enable=all -DLAUNCHPAD --error-exitcode=1 \
 	--inline-suppr \
 	--suppress=missingIncludeSystem \
 	--suppress=unmatchedSuppression \
