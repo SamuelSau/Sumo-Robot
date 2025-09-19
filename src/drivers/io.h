@@ -123,7 +123,6 @@ void io_set_direction(io_e io, io_dir_e direction);
 void io_set_resistor(io_e io, io_resistor_e resistor);
 void io_set_out(io_e io, io_out_e out);
 io_in_e io_get_input(io_e io);
-
 void io_init(void);
 
 #endif // IO_H
