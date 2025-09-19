@@ -6,7 +6,6 @@
  headers provided from TI that defines registers
 */
 
-#define LAUNCHPAD
 typedef enum {
     IO_10,
     IO_11,
@@ -60,7 +59,7 @@ typedef enum {
     IO_UART_TXD = IO_12,
     IO_LINE_DETECT_FRONT_LEFT = IO_13,
     IO_LINE_DETECT_BACK_LEFT = IO_14,
-    IO_LINE_DETECT_BACK_RIGHT IO_15,
+    IO_LINE_DETECT_BACK_RIGHT = IO_15,
     IO_I2C_SCL = IO_16,
     IO_I2C_SDA = IO_17,
     IO_IR_REMOTE = IO_20,
