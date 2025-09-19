@@ -1,3 +1,16 @@
+#Check arguments
+ifeq ($(HW),LAUNCHPAD)
+TARGET_NAME=launchpad
+else ifeq ($(HW),NSUMO)
+TARGET_NAME=n_sumo
+else ifeq ($(MAKECMDGOALS),clean)
+else ifeq ($(MAKECMDGOALS),cppcheck)
+else ifeq ($(MAKECMDGOALS),format)
+else
+$(error "Must pass HW=LAUNCHPAD or HW=NSUMO")
+endif
+
+
 # Directories
 TOOLS_DIR = ${TOOLS_PATH}
 MSPGCC_ROOT_DIR = $(TOOLS_DIR)/msp430-gcc
@@ -7,7 +20,6 @@ INCLUDE_DIRS = $(MSPGCC_INCLUDE_DIR)
 LIB_DIRS = $(MSPGCC_INCLUDE_DIR)
 BUILD_DIR = build
 OBJ_DIR = $(BUILD_DIR)/obj
-BIN_DIR = $(BUILD_DIR)/bin
 TI_CCS_DIR = $(TOOLS_DIR)/ccs2020/ccs
 DEBUG_BIN_DIR = $(TI_CCS_DIR)/ccs_base/DebugServer/bin
 DEBUG_DRIVERS_DIR = $(TI_CCS_DIR)/ccs_base/DebugServer/drivers
@@ -26,7 +38,7 @@ CPPCHECK = cppcheck
 FORMAT = clang-format
 
 # Files
-TARGET = $(BIN_DIR)/nsumo
+TARGET = $(BUILD_DIR)/$(TARGET_NAME)
 
 SOURCES_WITH_HEADERS = \
 	src/drivers/mcu_init.c \
@@ -47,11 +59,15 @@ HEADERS = \
 OBJECT_NAMES = $(SOURCES:.c=.o)
 OBJECTS = $(patsubst %,$(OBJ_DIR)/%,$(OBJECT_NAMES))
 
+#Defines
+HW_DEFINES = $(addprefix -D, $(HW)) #e.g. -DSUMO or -DLAUNCHPAD
+DEFINES = $(HW_DEFINES)
+
 #Static Analysis - Skip over checking MSP430 helper headers due to checking every ifdefs...
 CPPCHECK_INCLUDES = ./src
 CPPCHECK_IGNORE = external/printf
 CPPCHECK_FLAGS = \
-	--quiet --enable=all -DLAUNCHPAD --error-exitcode=1 \
+	--quiet --enable=all --error-exitcode=1 \
 	--inline-suppr \
 	--suppress=missingIncludeSystem \
 	--suppress=unmatchedSuppression \
@@ -62,8 +78,8 @@ CPPCHECK_FLAGS = \
 # Flags
 MCU = msp430g2553
 WFLAGS = -Wall -Wextra -Werror -Wshadow
-CFLAGS = -mmcu=$(MCU) $(WFLAGS) $(addprefix -I,$(INCLUDE_DIRS)) -Og -g
-LDFLAGS = -mmcu=$(MCU) $(addprefix -L,$(LIB_DIRS))
+CFLAGS = -mmcu=$(MCU) $(WFLAGS) $(addprefix -I,$(INCLUDE_DIRS)) $(DEFINES) -Og -g
+LDFLAGS = -mmcu=$(MCU) $(DEFINES) $(addprefix -L,$(LIB_DIRS))
 
 # Build
 ## Linking
