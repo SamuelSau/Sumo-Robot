@@ -23,16 +23,16 @@ typedef enum {
     IO_24,
     IO_25,
     IO_26,
-    IO_27
+    IO_27,
 #if defined(NSUMO)
-        IO_30,
+    IO_30,
     IO_31,
     IO_32,
     IO_33,
     IO_34,
     IO_35,
     IO_36,
-    IO_37
+    IO_37,
 #endif
 } io_generic_e;
 
