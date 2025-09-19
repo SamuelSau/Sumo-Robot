@@ -102,7 +102,7 @@ static const struct io_config io_initial_configs[IO_PORT_CNT * IO_PIN_CNT_PER_PO
     // Output driven by A0, direction must be set to output
 
     [IO_PWM_MOTORS_LEFT] = { IO_SELECT_ALT1, IO_RESISTOR_DISABLED, IO_DIR_OUTPUT, IO_OUT_LOW },
-    [IO_PWN_MOTORS_RIGHT] = { IO_SELECT_ALT1, IO_RESISTOR_DISABLED, IO_DIR_OUTPUT, IO_OUT_LOW },
+    [IO_PWM_MOTORS_RIGHT] = { IO_SELECT_ALT1, IO_RESISTOR_DISABLED, IO_DIR_OUTPUT, IO_OUT_LOW },
 
     /* Input
      * Range sensor provides open-drain output and uses internal pull-up resistor
@@ -129,8 +129,42 @@ static const struct io_config io_initial_configs[IO_PORT_CNT * IO_PIN_CNT_PER_PO
 #endif
 };
 
+typedef enum {
+    HW_TYPE_LAUNCHPAD,
+    HW_TYPE_NSUMO
+} hw_type_e;
+
+/* There isn't really a good way to identify which board is what. So the NSUMO has a pull resistor
+ * for pin 3.4 and will be used to detect at runtime for that board, else it's the launchpad.
+ * */
+
+static hw_type_e io_detect_hw_type(void)
+{
+    P3SEL &= ~(BIT4);
+    P3SEL2 &= ~(BIT4);
+    P3DIR &= ~(BIT4);
+    P3REN &= ~(BIT4);
+    P3OUT &= ~(BIT4);
+    // if pin 3,4 is high than it must mean it has an external pullup resistor (NSUMO)
+    return P3IN & BIT4 ? HW_TYPE_NSUMO : HW_TYPE_LAUNCHPAD;
+}
+
 void io_init(void)
 {
+#if defined(NSUMO)
+    // TODO: Assert
+    if (io_detect_hw_type() != HW_TYPE_NSUMO) {
+        while (1) { }
+    }
+#elif defined(LAUNCHPAD)
+    // TODO: Assert
+    if (io_detect_hw_type() != HW_TYPE_LAUNCHPAD) {
+        while (1) { }
+    }
+#else
+    // TODO: Assert
+    while (1) { }
+#endif
     for (io_e io = (io_e)IO_10; io < ARRAY_SIZE(io_initial_configs); io++) {
         io_configure(io, &io_initial_configs[io]);
     }
