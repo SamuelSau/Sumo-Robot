@@ -3,6 +3,7 @@
 #include <msp430.h>
 #include <stdint.h>
 #include <stdbool.h>
+#include <assert.h>
 
 #define IO_PORT_OFFSET (3u)
 #define IO_PORT_MASK (0x3u << IO_PORT_OFFSET)
@@ -19,6 +20,7 @@
  * There are 3 ports and 8 pins.
  * [Zeros (11-bits) | Port (2 bits) | Pin (3 bits)] */
 
+static_assert(sizeof(io_generic_e) == 1, "Unexpected size, -fshort-enums missing?");
 static inline uint8_t io_port(io_e io) { return (io & IO_PORT_MASK) >> IO_PORT_OFFSET; }
 
 static inline uint8_t io_pin_idx(io_e io) { return (io & IO_PIN_MASK); }
