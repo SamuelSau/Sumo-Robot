@@ -10,7 +10,6 @@ else
 $(error "Must pass HW=LAUNCHPAD or HW=NSUMO")
 endif
 
-
 # Directories
 TOOLS_DIR = ${TOOLS_PATH}
 MSPGCC_ROOT_DIR = $(TOOLS_DIR)/msp430-gcc
@@ -26,7 +25,7 @@ DEBUG_DRIVERS_DIR = $(TI_CCS_DIR)/ccs_base/DebugServer/drivers
 
 LIB_DIRS= $(MSPGCC_INCLUDE_DIR)
 INCLUDE_DIRS = $(MSPGCC_INCLUDE_DIR) \
-	       ./src \
+		./src \
 	       ./external/ \
 	       ./external/printf
 
@@ -41,13 +40,15 @@ FORMAT = clang-format
 TARGET = $(BUILD_DIR)/$(TARGET_NAME)
 
 SOURCES_WITH_HEADERS = \
+	src/common/assert_handler.c \
 	src/drivers/mcu_init.c \
         src/drivers/uart.c \
+	src/drivers/led.c \
 	src/drivers/i2c.c \
 	src/drivers/io.c \
 	src/app/drive.c \
 	src/app/enemy.c \
-
+	
 SOURCES = \
 	src/main.c \
 	$(SOURCES_WITH_HEADERS)
