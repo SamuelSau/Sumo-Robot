@@ -2,6 +2,7 @@
 #include "common/defines.h"
 #include <msp430.h>
 #include <stdint.h>
+#include <stdbool.h>
 
 #define IO_PORT_OFFSET (3u)
 #define IO_PORT_MASK (0x3u << IO_PORT_OFFSET)
@@ -107,7 +108,7 @@ static const struct io_config io_initial_configs[IO_PORT_CNT * IO_PIN_CNT_PER_PO
     /* Input
      * Range sensor provides open-drain output and uses internal pull-up resistor
      * */
-    [IO_RANGE_SENSOR_FRONT_INT] = { IO_SELECT_GPIO, IO_RESISTOR_DISABLED, IO_DIR_INPUT,
+    [IO_RANGE_SENSOR_FRONT_INT] = { IO_SELECT_GPIO, IO_RESISTOR_ENABLED, IO_DIR_INPUT,
                                     IO_OUT_HIGH },
 
     // Outputs
@@ -176,6 +177,24 @@ void io_configure(io_e io, const struct io_config *config)
     io_set_direction(io, config->dir);
     io_set_out(io, config->out);
     io_set_resistor(io, config->resistor);
+}
+
+void io_get_current_config(io_e io, struct io_config *current_config)
+{
+    const uint8_t port = io_port(io);
+    const uint8_t pin = io_pin_bit(io);
+    const uint8_t sel1 = *port_sel1_regs[port];
+    const uint8_t sel2 = *port_sel2_regs[port];
+    current_config->select = (io_select_e)((sel2 << 1) | sel1);
+    current_config->resistor = (io_resistor_e)(*port_ren_regs[port] & pin);
+    current_config->dir = (io_dir_e)(*port_dir_regs[port] & pin);
+    current_config->out = (io_out_e)(*port_dir_regs[port] & pin);
+}
+
+bool io_config_compare(const struct io_config *cfg1, const struct io_config *cfg2)
+{
+    return (cfg1->dir == cfg2->dir) && (cfg1->out == cfg2->out)
+        && (cfg1->resistor == cfg2->resistor) && (cfg1->select == cfg2->select);
 }
 
 void io_set_select(io_e io, io_select_e select)

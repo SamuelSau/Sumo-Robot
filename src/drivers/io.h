@@ -1,6 +1,9 @@
 #ifndef IO_H
 #define IO_H
 
+#include <stdbool.h>
+#include <stdint.h>
+
 /*
  IO pins handled for pinmapping, initialization, and configuration. This is an abstraction from the
  headers provided from TI that defines registers
@@ -89,8 +92,8 @@ typedef enum {
 } io_select_e;
 
 typedef enum {
-    IO_DIR_OUTPUT,
     IO_DIR_INPUT,
+    IO_DIR_OUTPUT,
 } io_dir_e;
 
 typedef enum {
@@ -117,6 +120,8 @@ struct io_config
 };
 
 void io_configure(io_e io, const struct io_config *config);
+void io_get_current_config(io_e io, struct io_config *current_config);
+bool io_config_compare(const struct io_config *cf1g, const struct io_config *cf2g);
 void io_set_select(io_e io, io_select_e select);
 void io_set_direction(io_e io, io_dir_e direction);
 void io_set_resistor(io_e io, io_resistor_e resistor);
