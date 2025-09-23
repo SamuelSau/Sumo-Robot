@@ -2,5 +2,9 @@
 #define UART_H
 
 void uart_init(void);
+void uart_putchar_interrupt(char c);
+
+// TODO: Replace with printf
+void uart_print_interrupt(const char *string);
 
 #endif // UART_H
