@@ -8,4 +8,9 @@
 
 static void watchdog_stop(void) { WDTCTL = WDTPW + WDTHOLD; }
 
-void mcu_init(void) { watchdog_stop(); }
+void mcu_init(void)
+{
+    watchdog_stop();
+    io_init();
+    _enable_interrupts(); // enable interrupts globally
+}
