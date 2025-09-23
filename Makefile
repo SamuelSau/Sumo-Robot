@@ -50,6 +50,7 @@ TARGET = $(BUILD_DIR)/bin/$(TARGET_HW)/$(TARGET_NAME)
 
 SOURCES_WITH_HEADERS = \
 	src/common/assert_handler.c \
+	src/common/ring_buffer.c \
 	src/drivers/mcu_init.c \
         src/drivers/uart.c \
 	src/drivers/led.c \
@@ -71,7 +72,7 @@ $(shell rm -f $(BUILD_DIR)/obj/src/test/test.o)
 endif
 HEADERS = \
 	$(SOURCES_WITH_HEADERS:.c=.h) \
-	src/common/defines.h
+	src/common/defines.h \
 
 OBJECT_NAMES = $(SOURCES:.c=.o)
 OBJECTS = $(patsubst %,$(OBJ_DIR)/%,$(OBJECT_NAMES))

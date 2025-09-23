@@ -9,5 +9,14 @@
         }                                                                                          \
     } while (0)
 
+// TODO: Decide what this should do
+#define ASSERT_INTERRUPT(expression)                                                               \
+    do {                                                                                           \
+        if (!(expression)) {                                                                       \
+            while (1)                                                                              \
+                ;                                                                                  \
+        }                                                                                          \
+    } while (0)
+
 void assert_handler();
 #endif // ASSERT_HANDLER_H
