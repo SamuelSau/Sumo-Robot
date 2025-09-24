@@ -14,20 +14,19 @@
 
 static void init_clocks()
 {
-	ASSERT(CALBC1_1MHZ != 0xFF && CALBC1_16MHZ != 0xFF);
-	/* Configures internal oscillator (main clock) to run 16MHz.
-	   Clock will be used a reference for DCO.
-	*/
-	BCSCTL1 |= CALBC1_16MHZ;
-	// Sets 16MHz for digitally controller oscillator (DCO)
-	DCOCTL |= CALDCO_16MHZ;
+    ASSERT(CALBC1_1MHZ != 0xFF && CALBC1_16MHZ != 0xFF);
+    /* Configures internal oscillator (main clock) to run 16MHz.
+       Clock will be used a reference for DCO.
+    */
+    BCSCTL1 |= CALBC1_16MHZ;
+    // Sets 16MHz for digitally controller oscillator (DCO)
+    DCOCTL |= CALDCO_16MHZ;
 
-	/* Set DCO as source for
-	 * MCLK: Masters clock drives CPU and some peripherals
-	 * SMCLK: Sub system clock drives some peripherals
-	 * */
-	//BCSCTL2 default 
-
+    /* Set DCO as source for
+     * MCLK: Masters clock drives CPU and some peripherals
+     * SMCLK: Sub system clock drives some peripherals
+     * */
+    // BCSCTL2 default
 }
 
 static void watchdog_stop(void) { WDTCTL = WDTPW + WDTHOLD; }

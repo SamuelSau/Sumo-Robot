@@ -36,20 +36,26 @@ LIB_DIRS= $(MSPGCC_INCLUDE_DIR)
 INCLUDE_DIRS = $(MSPGCC_INCLUDE_DIR) \
 		./src \
 	       ./external/ \
-	       ./external/printf
+	       ./
 
 # Toolchain
 CC = $(MSPGCC_BIN_DIR)/msp430-elf-gcc
 RM = rm
 DEBUG = LD_LIBRARY_PATH=$(DEBUG_DRIVERS_DIR) $(DEBUG_BIN_DIR)/mspdebug
+SIZE = $(MSPGCC_BIN_DIR)/msp430-elf-size
 CPPCHECK = cppcheck 
 FORMAT = clang-format
+READELF = $(MSPGCC_BIN_DIR)/msp430-elf-readelf
+ADDR2LINE = $(MSPGCC_BIN_DIR)/msp430-elf-addr2line
+
 
 # Files
 TARGET = $(BUILD_DIR)/bin/$(TARGET_HW)/$(TARGET_NAME)
 
 SOURCES_WITH_HEADERS = \
 	src/common/assert_handler.c \
+	src/common/ring_buffer.c \
+	src/common/trace.c \
 	src/drivers/mcu_init.c \
         src/drivers/uart.c \
 	src/drivers/led.c \
@@ -57,6 +63,7 @@ SOURCES_WITH_HEADERS = \
 	src/drivers/io.c \
 	src/app/drive.c \
 	src/app/enemy.c \
+	external/printf/printf.c \
 
 ifndef TEST
 SOURCES = \
@@ -81,11 +88,16 @@ HW_DEFINE = $(addprefix -D, $(HW)) #e.g. -DSUMO or -DLAUNCHPAD
 TEST_DEFINE = $(addprefix -DTEST=, $(TEST)) 
 DEFINES = \
 	  $(HW_DEFINE) \
-	  $(TEST_DEFINE)
+	  $(TEST_DEFINE) \
+	  -DPRINTF_INCLUDE_CONFIG_H \
 	
 #Static Analysis - Skip over checking MSP430 helper headers due to checking every ifdefs...
-CPPCHECK_INCLUDES = ./src
-CPPCHECK_IGNORE = external/printf
+CPPCHECK_INCLUDES = ./src ./
+IGNORE_FILES_FORMAT_CPPCHECK = \
+	external/printf/printf.h \
+	external/printf/print.c
+SOURCES_FORMAT_CPPCHECK = $(filter-out $(IGNORE_FILES_FORMAT_CPPCHECK),$(SOURCES))
+HEADERS_FORMAT = $(filter-out $(IGNORE_FILES_FORMAT_CPPCHECK),$(HEADERS))
 CPPCHECK_FLAGS = \
 	--quiet --enable=all --error-exitcode=1 \
 	--inline-suppr \
@@ -93,7 +105,6 @@ CPPCHECK_FLAGS = \
 	--suppress=unmatchedSuppression \
 	--suppress=unusedFunction \
 	$(addprefix -I,$(CPPCHECK_INCLUDES)) \
-	$(addprefix -i,$(CPPCHECK_IGNORE))
 
 # Flags
 MCU = msp430g2553
@@ -114,7 +125,7 @@ $(OBJ_DIR)/%.o: %.c
 	$(CC) $(CFLAGS) -c -o $@ $^
 
 # Phonies
-.PHONY: all clean flash cppcheck format
+.PHONY: all clean flash cppcheck format size symbols addr2line terminal tests
 
 all: $(TARGET)
 
@@ -123,7 +134,28 @@ clean:
 
 flash: $(TARGET)
 	$(DEBUG) tilib "prog $(TARGET)"
+
 cppcheck:
-	@$(CPPCHECK) $(CPPCHECK_FLAGS) $(SOURCES)
+	@$(CPPCHECK) $(CPPCHECK_FLAGS) $(SOURCES_FORMAT_CPPCHECK)
+
 format:
-	@$(FORMAT) -i $(SOURCES) $(HEADERS)
+	@$(FORMAT) -i $(SOURCES_FORMAT_CPPCHECK) $(HEADERS_FORMAT)
+
+size:	$(TARGET)
+	@$(SIZE) $(TARGET)
+
+symbols: $(TARGET)
+	@$(READELF) -s $(TARGET) | sort -n -k3
+
+addr2line: $(TARGET)
+	@$(ADDR2LINE) -e $(TARGET) $(ADDR)
+
+terminal:
+	@# Running without sudo requires udev rule under /etc/udev/rules.d
+	@echo "picocom -b 115200 /dev/ttyACM0"
+	@sleep 1
+	@picocom -b 115200 /dev/ttyAMC0
+
+tests:
+	@# Build all tests
+	@tools/build_tests.sh
