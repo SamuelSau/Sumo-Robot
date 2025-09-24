@@ -92,7 +92,7 @@ DEFINES = \
 	  -DPRINTF_INCLUDE_CONFIG_H \
 	
 #Static Analysis - Skip over checking MSP430 helper headers due to checking every ifdefs...
-CPPCHECK_INCLUDES = ./src ./
+CPPCHECK_INCLUDES = ./src ./ ./external
 IGNORE_FILES_FORMAT_CPPCHECK = \
 	external/printf/printf.h \
 	external/printf/print.c
@@ -104,6 +104,7 @@ CPPCHECK_FLAGS = \
 	--suppress=missingIncludeSystem \
 	--suppress=unmatchedSuppression \
 	--suppress=unusedFunction \
+	--suppress=redundantCondition \
 	$(addprefix -I,$(CPPCHECK_INCLUDES)) \
 
 # Flags

@@ -5,7 +5,9 @@
 #define ASSERT(expression)                                                                         \
     do {                                                                                           \
         if (!(expression)) {                                                                       \
-            assert_handler();                                                                      \
+            uint16_t pc;                                                                           \
+            asm volatile("mov pc, %0" : "=r"(pc));                                                 \
+            assert_handler(pc);                                                                    \
         }                                                                                          \
     } while (0)
 
@@ -17,5 +19,5 @@
         }                                                                                          \
     } while (0)
 
-void assert_handler();
+void assert_handler(uint16_t program_counter);
 #endif // ASSERT_HANDLER_H

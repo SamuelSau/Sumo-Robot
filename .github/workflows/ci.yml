@@ -9,11 +9,13 @@ jobs:
         uses: actions/checkout@v3
         with:
           submodules: "true"
+          fetch-depth: 0
       - run: chown -R $(id -u):$(id -g) $GITHUB_WORKSPACE
+      - run: git config diff.ignoreSubmodules all
       - run: make format && git diff --quiet
       - run: make cppcheck
-      - run: make HW=LAUNCHPAD size
-      - run: make HW=LAUNCHPAD symbols
+      - run: TOOLS_PATH=/home/ubuntu/dev/tools make HW=LAUNCHPAD size
+      - run: TOOLS_PATH=/home/ubuntu/dev/tools make HW=LAUNCHPAD symbols
       - run: TOOLS_PATH=/home/ubuntu/dev/tools make HW=NSUMO
       - run: TOOLS_PATH=/home/ubuntu/dev/tools make HW=LAUNCHPAD
       - run: TOOLS_PATH=/home/ubuntu/dev/tools tools/build_tests.sh
