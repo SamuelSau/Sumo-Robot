@@ -1,5 +1,6 @@
 #include "common/assert_handler.h"
 #include "common/ring_buffer.h"
+
 #include "common/defines.h"
 #include <stdint.h>
 #include <msp430.h>
@@ -100,9 +101,12 @@ void uart_init(void)
 
 void _putchar(char c)
 {
+
+    if (c == '\n') {
+        _putchar('\r');
+    }
     // Poll if full
-    while (ring_buffer_full(&tx_buffer))
-        ;
+    while (ring_buffer_full(&tx_buffer)) { }
 
     uart_tx_disable_interrupt();
     const bool tx_ongoing = !ring_buffer_empty(&tx_buffer);
@@ -111,11 +115,6 @@ void _putchar(char c)
         uart_tx_start();
     }
     uart_tx_enable_interrupt();
-
-    // Some terminals expect carriage return (\r) after line-feed (\n) for proper new line.
-    if (c == '\n') {
-        _putchar('\r');
-    }
 }
 
 void uart_init_assert(void)

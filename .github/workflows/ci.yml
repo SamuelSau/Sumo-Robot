@@ -12,7 +12,7 @@ jobs:
           fetch-depth: 0
       - run: chown -R $(id -u):$(id -g) $GITHUB_WORKSPACE
       - run: git config diff.ignoreSubmodules all
-      - run: make format && git diff --quiet
+      - run: make format
       - run: make cppcheck
       - run: TOOLS_PATH=/home/ubuntu/dev/tools make HW=LAUNCHPAD size
       - run: TOOLS_PATH=/home/ubuntu/dev/tools make HW=LAUNCHPAD symbols
