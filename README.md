@@ -17,4 +17,3 @@ In this implementation, the assert is first triggered at a breakpoint
 blinks the LED indefinitely. The components printed are the memory address,
 program counter, and _add2line_ that retrieves file and line number, and there
 is a makefile rule for it. 
-

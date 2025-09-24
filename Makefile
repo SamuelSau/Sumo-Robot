@@ -59,6 +59,7 @@ SOURCES_WITH_HEADERS = \
 	src/drivers/mcu_init.c \
   src/drivers/uart.c \
 	src/drivers/led.c \
+	src/drivers/ir_remote.c \
 	src/drivers/i2c.c \
 	src/drivers/io.c \
 	src/app/drive.c \
@@ -105,6 +106,7 @@ CPPCHECK_FLAGS = \
 	--suppress=unmatchedSuppression \
 	--suppress=unusedFunction \
 	--suppress=redundantCondition \
+	--suppress=unusedStructMember \
 	$(addprefix -I,$(CPPCHECK_INCLUDES)) \
 
 # Flags
@@ -153,9 +155,9 @@ addr2line: $(TARGET)
 
 terminal:
 	@# Running without sudo requires udev rule under /etc/udev/rules.d
-	@echo "picocom -b 115200 /dev/ttyACM0"
+	@echo "picocom -b 115200 /dev/ttyACM1"
 	@sleep 1
-	@picocom -b 115200 /dev/ttyAMC0
+	@picocom -b 115200 /dev/ttyAMC1
 
 tests:
 	@# Build all tests
