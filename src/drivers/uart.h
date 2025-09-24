@@ -2,6 +2,11 @@
 #define UART_H
 
 void uart_init(void);
+
+void _putchar(char c);
+
+void uart_init_assert(void);
+void uart_trace_assert(const char *string);
 void uart_putchar_interrupt(char c);
 
 // TODO: Replace with printf

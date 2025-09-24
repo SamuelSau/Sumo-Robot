@@ -11,3 +11,10 @@ An embedded systems project for a robot to track and attack enemies in a sumo pl
 * Uses Makefile to build and clean the project
 * Formatted based on clang-format-18
 
+## Assert
+In this implementation, the assert is first triggered at a breakpoint
+(if a debugger is attached) and traces the address of the assert and then
+blinks the LED indefinitely. The components printed are the memory address,
+program counter, and _add2line_ that retrieves file and line number, and there
+is a makefile rule for it. 
+

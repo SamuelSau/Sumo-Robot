@@ -10,15 +10,16 @@ void ring_buffer_put(struct ring_buffer *rb, uint8_t data)
         rb->head = 0;
     }
 }
+
 uint8_t ring_buffer_get(struct ring_buffer *rb)
 {
     const uint8_t data = rb->buffer[rb->tail];
+    rb->tail++;
 
-    // To avoid expensive modulo for wrapping around
+    // Avoid expensive modulo operation
     if (rb->tail == rb->size) {
         rb->tail = 0;
     }
-
     return data;
 }
 uint8_t ring_buffer_peek(const struct ring_buffer *rb) { return rb->buffer[rb->tail]; }

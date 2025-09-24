@@ -1,5 +1,7 @@
 #include "common/assert_handler.h"
 #include "common/ring_buffer.h"
+
+#include "common/defines.h"
 #include <stdint.h>
 #include <msp430.h>
 #include <assert.h>
@@ -46,7 +48,7 @@ static void uart_tx_start(void)
     }
 }
 
-__attribute__((interrupt(USCIAB0TX_VECTOR))) void isr_uart_tx()
+INTERRUPT_FUNCTION(USCIAB0TX_VECTOR) isr_uart_tx()
 {
     ASSERT_INTERRUPT(!ring_buffer_empty(&tx_buffer));
 
@@ -97,11 +99,14 @@ void uart_init(void)
     initialized = true;
 }
 
-void uart_putchar_interrupt(char c)
+void _putchar(char c)
 {
+
+    if (c == '\n') {
+        _putchar('\r');
+    }
     // Poll if full
-    while (ring_buffer_full(&tx_buffer))
-        ;
+    while (ring_buffer_full(&tx_buffer)) { }
 
     uart_tx_disable_interrupt();
     const bool tx_ongoing = !ring_buffer_empty(&tx_buffer);
@@ -110,18 +115,28 @@ void uart_putchar_interrupt(char c)
         uart_tx_start();
     }
     uart_tx_enable_interrupt();
-
-    // Some terminals expect carriage return (\r) after line-feed (\n) for proper new line.
-    if (c == '\n') {
-        uart_putchar_interrupt('\r');
-    }
 }
 
-void uart_print_interrupt(const char *string)
+void uart_init_assert(void)
+{
+    uart_tx_disable_interrupt();
+    uart_configure();
+}
+
+static void uart_putchar_polling(char c)
+{
+    if (c == '\n') {
+        uart_putchar_polling('\r');
+    }
+    UCA0TXBUF = c;
+    while (!(IFG2 & UCA0TXIFG)) { }
+}
+
+void uart_trace_assert(const char *string)
 {
     int i = 0;
     while (string[i] != '\0') {
-        uart_putchar_interrupt(string[i]);
+        uart_putchar_polling(string[i]);
         i++;
     }
 }

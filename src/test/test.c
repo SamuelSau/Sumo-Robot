@@ -1,8 +1,10 @@
 #include "drivers/io.h"
 #include "drivers/mcu_init.h"
 #include "drivers/led.h"
+#include "drivers/uart.h"
 #include "common/assert_handler.h"
 #include "common/defines.h"
+#include "common/trace.h"
 #include <msp430.h>
 
 static void test_assert(void);
@@ -131,6 +133,37 @@ static void test_io_interrupt(void)
 	io_enable_interrupt(IO_11);
 	io_enable_interrupt(IO_20);
 	while(1);	
+}
+
+SUPRESS_UNUSED
+static void test_uart(void)
+{
+	test_setup();
+	uart_init();
+	while (1) {
+		_putchar('S');
+		_putchar('A');
+		_putchar('M');
+		_putchar('M');
+		_putchar('Y');
+		_putchar('S');
+		_putchar('A');
+		_putchar('U');
+		_putchar('\n');
+		BUSY_WAIT_ms(100);
+	}
+}
+
+SUPRESS_UNUSED
+static void test_trace(void)
+{
+	test_setup();
+	trace_init();
+	while (1) 
+	{
+		TRACE("SAMMY SAU %d", 2025);
+		BUSY_WAIT_ms(100);
+	}
 }
 
 int main()

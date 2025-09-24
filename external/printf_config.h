@@ -1,0 +1,10 @@
+#ifndef PRINTF_CONFIG_H
+#define PRINTF_CONFIG_H
+
+// Disable everything not used to reduce flash memory
+#define PRINTF_DISABLE_SUPPORT_LONG_LONG
+#define PRINTF_DISABLE_SUPPORT_PTRDIFF_T
+#define PRINTF_DISABLE_SUPPORT_EXPONENTIAL
+#define PRINTF_DISABLE_SUPPORT_FLOAT
+
+#endif //PRINTF_CONFIG_H
