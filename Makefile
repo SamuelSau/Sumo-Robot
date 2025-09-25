@@ -60,6 +60,7 @@ SOURCES_WITH_HEADERS = \
   src/drivers/uart.c \
 	src/drivers/led.c \
 	src/drivers/ir_remote.c \
+	src/drivers/pwm.c \
 	src/drivers/i2c.c \
 	src/drivers/io.c \
 	src/app/drive.c \

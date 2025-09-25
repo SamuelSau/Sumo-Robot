@@ -91,12 +91,12 @@ static const struct io_config io_initial_configs[IO_PORT_CNT * IO_PIN_CNT_PER_PO
     [IO_UART_TXD] = { IO_SELECT_ALT3, IO_RESISTOR_DISABLED, IO_DIR_OUTPUT, IO_OUT_LOW },
     // Input (no resistor required according to datasheet of IR receiver)
     [IO_IR_REMOTE] = { IO_SELECT_GPIO, IO_RESISTOR_DISABLED, IO_DIR_INPUT, IO_OUT_LOW },
+    [IO_PWM_MOTORS_LEFT] = { IO_SELECT_ALT1, IO_RESISTOR_DISABLED, IO_DIR_OUTPUT, IO_OUT_LOW },
 #if defined(LAUNCHPAD)
     // unused pins
     [IO_UNUSED_1] = UNUSED_CONFIG,
     [IO_UNUSED_2] = UNUSED_CONFIG,
     [IO_UNUSED_3] = UNUSED_CONFIG,
-    [IO_UNUSED_4] = UNUSED_CONFIG,
     [IO_UNUSED_5] = UNUSED_CONFIG,
     [IO_UNUSED_7] = UNUSED_CONFIG,
     [IO_UNUSED_8] = UNUSED_CONFIG,
@@ -106,7 +106,7 @@ static const struct io_config io_initial_configs[IO_PORT_CNT * IO_PIN_CNT_PER_PO
     [IO_UNUSED_12] = UNUSED_CONFIG,
     [IO_UNUSED_13] = UNUSED_CONFIG,
 #elif defined(NSUMO)
-    
+
     /* I2C clock/data
      * Resistor: Disabled
      * Direction: N/A
@@ -123,7 +123,6 @@ static const struct io_config io_initial_configs[IO_PORT_CNT * IO_PIN_CNT_PER_PO
 
     // Output driven by A0, direction must be set to output
 
-    [IO_PWM_MOTORS_LEFT] = { IO_SELECT_ALT1, IO_RESISTOR_DISABLED, IO_DIR_OUTPUT, IO_OUT_LOW },
     [IO_PWM_MOTORS_RIGHT] = { IO_SELECT_ALT1, IO_RESISTOR_DISABLED, IO_DIR_OUTPUT, IO_OUT_LOW },
 
     /* Input
@@ -197,12 +196,13 @@ void io_get_current_config(io_e io, struct io_config *current_config)
 {
     const uint8_t port = io_port(io);
     const uint8_t pin = io_pin_bit(io);
-    const uint8_t sel1 = *port_sel1_regs[port];
-    const uint8_t sel2 = *port_sel2_regs[port];
+    const uint8_t sel1 = (*port_sel1_regs[port]) ? 1 : 0;
+    const uint8_t sel2 = (*port_sel2_regs[port]) ? 1 : 0;
     current_config->select = (io_select_e)((sel2 << 1) | sel1);
-    current_config->resistor = (io_resistor_e)(*port_ren_regs[port] & pin);
-    current_config->dir = (io_dir_e)(*port_dir_regs[port] & pin);
-    current_config->out = (io_out_e)(*port_dir_regs[port] & pin);
+    current_config->resistor =
+        (*port_ren_regs[port] & pin) ? IO_RESISTOR_ENABLED : IO_RESISTOR_DISABLED;
+    current_config->dir = (*port_dir_regs[port] & pin) ? IO_DIR_OUTPUT : IO_DIR_INPUT;
+    current_config->out = (*port_dir_regs[port] & pin) ? IO_OUT_HIGH : IO_OUT_LOW;
 }
 
 bool io_config_compare(const struct io_config *cfg1, const struct io_config *cfg2)

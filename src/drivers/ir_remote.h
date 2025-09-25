@@ -1,8 +1,7 @@
 #ifndef IR_REMOTE_H
 #define IR_REMOTE_H
 
-typedef enum
-{
+typedef enum {
     IR_CMD_0 = 0x98,
     IR_CMD_1 = 0xA2,
     IR_CMD_2 = 0x62,
@@ -27,4 +26,4 @@ void ir_remote_init(void);
 ir_cmd_e ir_remote_get_cmd(void);
 const char *ir_remote_cmd_to_string(ir_cmd_e cmd);
 
-#endif //IR_REMOTE_H
+#endif // IR_REMOTE_H
