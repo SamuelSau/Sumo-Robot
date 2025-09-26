@@ -57,10 +57,11 @@ SOURCES_WITH_HEADERS = \
 	src/common/ring_buffer.c \
 	src/common/trace.c \
 	src/drivers/mcu_init.c \
-  src/drivers/uart.c \
+  	src/drivers/uart.c \
 	src/drivers/led.c \
 	src/drivers/ir_remote.c \
 	src/drivers/pwm.c \
+	src/drivers/tb6612fng.c \
 	src/drivers/i2c.c \
 	src/drivers/io.c \
 	src/app/drive.c \
