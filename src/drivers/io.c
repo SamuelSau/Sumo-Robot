@@ -80,6 +80,12 @@ static isr_function isr_functions[IO_INTERRUPT_PORT_CNT][IO_PIN_CNT_PER_PORT] = 
         IO_SELECT_GPIO, IO_RESISTOR_ENABLED, IO_DIR_OUTPUT, IO_OUT_LOW                             \
     }
 
+// Overriden by ADC, so just default it to floating input here
+#define ADC_CONFIG                                                                                 \
+    {                                                                                              \
+        IO_SELECT_GPIO, IO_RESISTOR_DISABLED, IO_DIR_INPUT, IO_OUT_LOW                             \
+    }
+
 static const struct io_config io_initial_configs[IO_PORT_CNT * IO_PIN_CNT_PER_PORT] = {
     [IO_TEST_LED] = { IO_SELECT_GPIO, IO_RESISTOR_DISABLED, IO_DIR_OUTPUT, IO_OUT_LOW },
     /* UART RX/TX
@@ -100,9 +106,10 @@ static const struct io_config io_initial_configs[IO_PORT_CNT * IO_PIN_CNT_PER_PO
     [IO_MOTORS_LEFT_CC_1] = { IO_SELECT_GPIO, IO_RESISTOR_DISABLED, IO_DIR_OUTPUT, IO_OUT_LOW },
     [IO_MOTORS_LEFT_CC_2] = { IO_SELECT_GPIO, IO_RESISTOR_DISABLED, IO_DIR_OUTPUT, IO_OUT_LOW },
 
+    [IO_LINE_DETECT_FRONT_LEFT] = ADC_CONFIG,
+
 #if defined(LAUNCHPAD)
     // unused pins
-    [IO_UNUSED_1] = UNUSED_CONFIG,
     [IO_UNUSED_2] = UNUSED_CONFIG,
     [IO_UNUSED_3] = UNUSED_CONFIG,
     [IO_UNUSED_5] = UNUSED_CONFIG,
@@ -142,15 +149,16 @@ static const struct io_config io_initial_configs[IO_PORT_CNT * IO_PIN_CNT_PER_PO
     [IO_XSHUT_LEFT] = { IO_SELECT_GPIO, IO_RESISTOR_DISABLED, IO_DIR_OUTPUT, IO_OUT_LOW },
     [IO_XSHUT_FRONT_RIGHT] = { IO_SELECT_GPIO, IO_RESISTOR_DISABLED, IO_DIR_OUTPUT, IO_OUT_LOW },
 
-    // Overriden by ADC, so just default it to floating input here
-    [IO_LINE_DETECT_FRONT_RIGHT] = { IO_SELECT_GPIO, IO_RESISTOR_DISABLED, IO_DIR_OUTPUT,
-                                     IO_OUT_LOW },
-    [IO_LINE_DETECT_FRONT_LEFT] = { IO_SELECT_GPIO, IO_RESISTOR_DISABLED, IO_DIR_OUTPUT,
-                                    IO_OUT_LOW },
-    [IO_LINE_DETECT_BACK_RIGHT] = { IO_SELECT_GPIO, IO_RESISTOR_DISABLED, IO_DIR_OUTPUT,
-                                    IO_OUT_LOW },
-    [IO_LINE_DETECT_BACK_LEFT] = { IO_SELECT_GPIO, IO_RESISTOR_DISABLED, IO_DIR_OUTPUT,
-                                   IO_OUT_LOW },
+    [IO_LINE_DETECT_FRONT_RIGHT] = ADC_CONFIG,
+    [IO_LINE_DETECT_BACK_RIGHT] = ADC_CONFIG,
+    [IO_LINE_DETECT_BACK_LEFT] = ADC_CONFIG,
+#endif
+};
+
+static const io_e io_adc_pins_arr[] = { IO_LINE_DETECT_FRONT_LEFT,
+#if defined(NSUMO)
+                                        IO_LINE_DETECT_BACK_LEFT, IO_LINE_DETECT_FRONT_RIGHT,
+                                        IO_LINE_DETECT_BACK_RIGHT
 #endif
 };
 
@@ -289,6 +297,19 @@ io_in_e io_get_input(io_e io)
 static void io_clear_interrupt(io_e io)
 {
     *port_interrupt_flag_regs[io_port(io)] &= ~io_pin_bit(io);
+}
+
+const io_e *io_adc_pins(uint8_t *cnt)
+{
+    *cnt = ARRAY_SIZE(io_adc_pins_arr);
+    return io_adc_pins_arr;
+}
+
+uint8_t io_to_adc_idx(io_e io)
+{
+    // only pins on port 1 supports ADC
+    ASSERT(io_port(io) == IO_PORT1);
+    return io_pin_idx(io);
 }
 
 /* Function also disables interrupt because selecting edge may trigger

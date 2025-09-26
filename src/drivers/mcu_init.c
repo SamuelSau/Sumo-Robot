@@ -27,6 +27,9 @@ static void init_clocks()
      * SMCLK: Sub system clock drives some peripherals
      * */
     // BCSCTL2 default
+
+    // Select internal Very Low Frequency Oscillator (VLO) as ACLK source
+    BCSCTL3 = LFXT1S_2;
 }
 
 static void watchdog_stop(void) { WDTCTL = WDTPW + WDTHOLD; }
