@@ -1,4 +1,5 @@
 #include "app/drive.h"
+#include "app/line.h"
 #include "drivers/io.h"
 #include "drivers/mcu_init.h"
 #include "drivers/led.h"
@@ -332,6 +333,19 @@ static void test_qre1113(void)
         BUSY_WAIT_ms(1000);
     }
 }
+
+SUPRESS_UNUSED
+static void test_line(void)
+{
+    test_setup();
+    trace_init();
+    line_init();
+    while (1) {
+        TRACE("Line %u", line_get());
+        BUSY_WAIT_ms(1000);
+    }
+}
+
 
 int main()
 {
