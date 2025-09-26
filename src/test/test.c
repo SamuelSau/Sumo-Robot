@@ -286,7 +286,16 @@ static void test_drive(void)
     }
 }
 
-
+SUPRESS_UNUSED
+static void test_assert_motors(void)
+{
+    test_setup();
+    drive_init();
+    drive_set(DRIVE_DIR_FORWARD, DRIVE_SPEED_MAX);
+    BUSY_WAIT_ms(3000);
+    ASSERT(0);
+    while(0) { }
+}
 int main()
 {
 	TEST();
