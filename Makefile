@@ -1,13 +1,16 @@
 #Check arguments
+GOALS_WITHOUT_HW = clean cppcheck format terminal tests
+GOAL_HAS_TARGET = $(filter $(MAKECMDGOALS),$(GOALS_WITHOUT_HW))
+ifeq ($(GOAL_HAS_TARGET),)
+
 ifeq ($(HW),LAUNCHPAD)
 TARGET_HW=launchpad
 else ifeq ($(HW),NSUMO)
 TARGET_HW=n_sumo
-else ifeq ($(MAKECMDGOALS),clean)
-else ifeq ($(MAKECMDGOALS),cppcheck)
-else ifeq ($(MAKECMDGOALS),format)
 else
 $(error "Must pass HW=LAUNCHPAD or HW=NSUMO")
+endif
+
 endif
 TARGET_NAME=$(TARGET_HW)
 
@@ -27,7 +30,7 @@ MSPGCC_INCLUDE_DIR = $(MSPGCC_ROOT_DIR)/include
 INCLUDE_DIRS = $(MSPGCC_INCLUDE_DIR)
 LIB_DIRS = $(MSPGCC_INCLUDE_DIR)
 BUILD_DIR = build
-OBJ_DIR = $(BUILD_DIR)/obj
+OBJ_DIR = $(BUILD_DIR)/$(TARGET_HW)/obj
 TI_CCS_DIR = $(TOOLS_DIR)/ccs2020/ccs
 DEBUG_BIN_DIR = $(TI_CCS_DIR)/ccs_base/DebugServer/bin
 DEBUG_DRIVERS_DIR = $(TI_CCS_DIR)/ccs_base/DebugServer/drivers
@@ -50,7 +53,7 @@ ADDR2LINE = $(MSPGCC_BIN_DIR)/msp430-elf-addr2line
 
 
 # Files
-TARGET = $(BUILD_DIR)/bin/$(TARGET_HW)/$(TARGET_NAME)
+TARGET = $(BUILD_DIR)$(TARGET_HW)/bin/$(TARGET_NAME)
 
 SOURCES_WITH_HEADERS = \
 	src/common/assert_handler.c \
@@ -73,16 +76,18 @@ SOURCES_WITH_HEADERS = \
 	external/printf/printf.c \
 
 ifndef TEST
-SOURCES = \
-	src/main.c \
-	$(SOURCES_WITH_HEADERS)
+MAIN_FILE = src/main.c
 else
-SOURCES = \
-	src/test/test.c \
-	$(SOURCES_WITH_HEADERS)
-#Delete object file to force rebuild when changing test
-$(shell rm -f $(BUILD_DIR)/obj/src/test/test.o)
+MAIN_FILE = src/test/test.c
+
+#Touch test.c to force rebuild ever time in case TEST define changed
+$(shell touch src/test/test.c)
 endif
+
+SOURCES = \
+	  $(MAIN_FILE) \
+	  $(SOURCES_WITH_HEADERS)
+
 HEADERS = \
 	$(SOURCES_WITH_HEADERS:.c=.h) \
 	src/common/defines.h \
@@ -164,9 +169,9 @@ addr2line: $(TARGET)
 
 terminal:
 	@# Running without sudo requires udev rule under /etc/udev/rules.d
-	@echo "picocom -b 115200 /dev/ttyACM1"
+	@echo "picocom -b 115200 /dev/ttyACM0"
 	@sleep 1
-	@picocom -b 115200 /dev/ttyAMC1
+	@picocom -b 115200 /dev/ttyAMC0
 
 tests:
 	@# Build all tests

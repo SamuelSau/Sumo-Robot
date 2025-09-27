@@ -4,6 +4,8 @@ jobs:
     runs-on: ubuntu-latest
     container:
       image: samloveswater/msp430-gcc-9.3.1.11:latest
+    env:
+      TOOLS_PATH: /home/ubuntu/dev/tools
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
@@ -14,9 +16,9 @@ jobs:
       - run: git config diff.ignoreSubmodules all
       - run: make format
       - run: make cppcheck
-      - run: TOOLS_PATH=/home/ubuntu/dev/tools make HW=LAUNCHPAD size
-      - run: TOOLS_PATH=/home/ubuntu/dev/tools make HW=LAUNCHPAD symbols
-      - run: TOOLS_PATH=/home/ubuntu/dev/tools make HW=NSUMO
-      - run: TOOLS_PATH=/home/ubuntu/dev/tools make HW=LAUNCHPAD
-      - run: TOOLS_PATH=/home/ubuntu/dev/tools tools/build_tests.sh
+      - run: make HW=LAUNCHPAD size
+      - run: make HW=LAUNCHPAD symbols
+      - run: make HW=NSUMO
+      - run: make HW=LAUNCHPAD
+      - run: make tests
 
