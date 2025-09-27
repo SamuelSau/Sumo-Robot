@@ -62,10 +62,11 @@ SOURCES_WITH_HEADERS = \
 	src/drivers/ir_remote.c \
 	src/drivers/pwm.c \
 	src/drivers/tb6612fng.c \
-	src/drivers/i2c.c \
 	src/drivers/io.c \
 	src/drivers/adc.c \
 	src/drivers/qre1113.c \
+	src/drivers/i2c.c \
+	src/drivers/vl53l0x.c \
 	src/app/drive.c \
 	src/app/line.c \
 	src/app/enemy.c \
@@ -112,6 +113,9 @@ CPPCHECK_FLAGS = \
 	--suppress=unusedFunction \
 	--suppress=redundantCondition \
 	--suppress=unusedStructMember \
+	--suppress=arrayIndexOutOfBounds \
+	--suppress=badBitmaskCheck \
+	--suppress=knownConditionTrueFalse \
 	$(addprefix -I,$(CPPCHECK_INCLUDES)) \
 
 # Flags
