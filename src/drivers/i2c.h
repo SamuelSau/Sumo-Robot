@@ -23,8 +23,8 @@ i2c_result_e i2c_read(const uint8_t *addr, uint8_t addr_size, uint8_t *data, uin
 
 // Convenient wrapper functions
 i2c_result_e i2c_read_addr8_data8(uint8_t addr, uint8_t *data);
-i2c_result_e i2c_read_addr8_data16(uint8_t addr, uint8_t *data);
-i2c_result_e i2c_read_addr8_dat32(uint8_t addr, uint8_t *data);
+i2c_result_e i2c_read_addr8_data16(uint8_t addr, uint16_t *data);
+i2c_result_e i2c_read_addr8_data32(uint8_t addr, uint32_t *data);
 i2c_result_e i2c_write_addr8_data8(uint8_t addr, uint8_t data);
 
 #endif // I2C_H

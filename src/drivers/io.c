@@ -120,11 +120,16 @@ static const struct io_config io_initial_configs[IO_PORT_CNT * IO_PIN_CNT_PER_PO
     [IO_I2C_SCL] = { IO_SELECT_ALT3, IO_RESISTOR_DISABLED, IO_DIR_OUTPUT, IO_OUT_LOW },
     [IO_I2C_SDA] = { IO_SELECT_ALT3, IO_RESISTOR_DISABLED, IO_DIR_OUTPUT, IO_OUT_LOW },
 
+    /* Input
+     * Range sensor provides open-drain output and uses internal pull-up resistor
+     * */
+    [IO_RANGE_SENSOR_FRONT_INT] = { IO_SELECT_GPIO, IO_RESISTOR_ENABLED, IO_DIR_INPUT,
+                                    IO_OUT_HIGH },
+
 #if defined(LAUNCHPAD)
     // unused pins
     [IO_UNUSED_2] = UNUSED_CONFIG,
     [IO_UNUSED_3] = UNUSED_CONFIG,
-    [IO_UNUSED_9] = UNUSED_CONFIG,
     [IO_UNUSED_11] = UNUSED_CONFIG,
     [IO_UNUSED_13] = UNUSED_CONFIG,
 #elif defined(NSUMO)
@@ -135,12 +140,6 @@ static const struct io_config io_initial_configs[IO_PORT_CNT * IO_PIN_CNT_PER_PO
     // Output driven by A0, direction must be set to output
 
     [IO_PWM_MOTORS_RIGHT] = { IO_SELECT_ALT1, IO_RESISTOR_DISABLED, IO_DIR_OUTPUT, IO_OUT_LOW },
-
-    /* Input
-     * Range sensor provides open-drain output and uses internal pull-up resistor
-     * */
-    [IO_RANGE_SENSOR_FRONT_INT] = { IO_SELECT_GPIO, IO_RESISTOR_ENABLED, IO_DIR_INPUT,
-                                    IO_OUT_HIGH },
 
     // Outputs
     [IO_XSHUT_FRONT_LEFT] = { IO_SELECT_GPIO, IO_RESISTOR_DISABLED, IO_DIR_OUTPUT, IO_OUT_LOW },
@@ -321,10 +320,10 @@ static void io_set_interrupt_trigger(io_e io, io_trigger_e trigger)
     io_disable_interrupt(io);
     switch (trigger) {
     case IO_TRIGGER_FALLING:
-        *port_interrupt_edge_select_regs[port] |= pin;
+        *port_interrupt_edge_select_regs[port] &= ~pin;
         break;
     case IO_TRIGGER_RISING:
-        *port_interrupt_edge_select_regs[port] &= ~pin;
+        *port_interrupt_edge_select_regs[port] |= pin;
         break;
     }
     io_clear_interrupt(io); // still needs to be cleared even if disabled

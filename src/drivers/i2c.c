@@ -167,16 +167,16 @@ i2c_result_e i2c_read(const uint8_t *addr, uint8_t addr_size, uint8_t *data, uin
 
     return I2C_RESULT_OK;
 }
-// Convenient wrapper functions
+
 i2c_result_e i2c_read_addr8_data8(uint8_t addr, uint8_t *data)
 {
     return i2c_read(&addr, 1, data, 1);
 }
-i2c_result_e i2c_read_addr8_data16(uint8_t addr, uint8_t *data)
+i2c_result_e i2c_read_addr8_data16(uint8_t addr, uint16_t *data)
 {
     return i2c_read(&addr, 1, (uint8_t *)data, 2);
 }
-i2c_result_e i2c_read_addr8_dat32(uint8_t addr, uint8_t *data)
+i2c_result_e i2c_read_addr8_data32(uint8_t addr, uint32_t *data)
 {
     return i2c_read(&addr, 1, (uint8_t *)data, 4);
 }
@@ -186,6 +186,7 @@ i2c_result_e i2c_write_addr8_data8(uint8_t addr, uint8_t data)
 }
 
 void i2c_set_slave_address(uint8_t addr) { UCB0I2CSA = addr; }
+
 static bool initialized = false;
 void i2c_init(void)
 {
