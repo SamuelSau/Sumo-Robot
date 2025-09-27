@@ -21,8 +21,8 @@
 static void assert_trace(uint16_t program_counter)
 {
     // UART Tx
-    P1SEL |= BIT1;
-    P1SEL2 |= BIT1;
+    P1SEL |= BIT2;
+    P1SEL2 |= BIT2;
     uart_init();
     char assert_string[ASSERT_STRING_MAX_SIZE];
     snprintf(assert_string, sizeof(assert_string), "ASSERT 0x%x\n", program_counter);
