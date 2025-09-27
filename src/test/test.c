@@ -1,5 +1,6 @@
 #include "app/drive.h"
 #include "app/line.h"
+#include "app/enemy.h"
 #include "drivers/io.h"
 #include "drivers/mcu_init.h"
 #include "drivers/led.h"
@@ -438,6 +439,19 @@ void test_vl53l0x_multiple(void)
                                                           ranges[VL53L0X_IDX_FRONT_RIGHT],
                                                           ranges[VL53L0X_IDX_LEFT],
                                                           ranges[VL53L0X_IDX_RIGHT]);
+        BUSY_WAIT_ms(1000);
+    }
+}
+
+SUPRESS_UNUSED
+void test_enemy(void)
+{
+    test_setup();
+    trace_init();
+    enemy_init();
+    while (1) {
+        struct enemy enemy = enemy_get();
+        TRACE("%s %s", enemy_pos_str(enemy.position), enemy_range_str(enemy.range));
         BUSY_WAIT_ms(1000);
     }
 }
