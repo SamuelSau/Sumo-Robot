@@ -4,10 +4,7 @@
 
 static volatile uint32_t watchdog_interrupt_cnt = 0;
 
-INTERRUPT_FUNCTION(WDT_VECTOR) isr_watchdog(void)
-{
-    watchdog_interrupt_cnt++;
-}
+INTERRUPT_FUNCTION(WDT_VECTOR) isr_watchdog(void) { watchdog_interrupt_cnt++; }
 
 uint32_t millis()
 {
