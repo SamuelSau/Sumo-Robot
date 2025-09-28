@@ -53,7 +53,7 @@ ADDR2LINE = $(MSPGCC_BIN_DIR)/msp430-elf-addr2line
 
 
 # Files
-TARGET = $(BUILD_DIR)$(TARGET_HW)/bin/$(TARGET_NAME)
+TARGET = $(BUILD_DIR)/$(TARGET_HW)/bin/$(TARGET_NAME)
 
 SOURCES_WITH_HEADERS = \
 	src/common/assert_handler.c \
@@ -77,6 +77,12 @@ SOURCES_WITH_HEADERS = \
 	src/app/line.c \
 	src/app/timer.c \
 	src/app/enemy.c \
+	src/app/state_machine.c \
+	src/app/state_wait.c \
+	src/app/state_search.c \
+	src/app/state_attack.c \
+	src/app/state_retreat.c \
+	src/app/state_manual.c \
 	external/printf/printf.c \
 
 ifndef TEST
@@ -106,6 +112,7 @@ DEFINES = \
 	  $(HW_DEFINE) \
 	  $(TEST_DEFINE) \
 	  -DPRINTF_INCLUDE_CONFIG_H \
+	  -DDISABLE_ENUM_STRINGS \
 	
 #Static Analysis - Skip over checking MSP430 helper headers due to checking every ifdefs...
 CPPCHECK_INCLUDES = ./src ./ ./external
@@ -125,6 +132,7 @@ CPPCHECK_FLAGS = \
 	--suppress=arrayIndexOutOfBounds \
 	--suppress=badBitmaskCheck \
 	--suppress=knownConditionTrueFalse \
+	--suppress=constParameterPointer \
 	$(addprefix -I,$(CPPCHECK_INCLUDES)) \
 
 # Flags
