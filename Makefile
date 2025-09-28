@@ -59,6 +59,7 @@ SOURCES_WITH_HEADERS = \
 	src/common/assert_handler.c \
 	src/common/ring_buffer.c \
 	src/common/trace.c \
+	src/common/sleep.c \
 	src/drivers/mcu_init.c \
   	src/drivers/uart.c \
 	src/drivers/led.c \
@@ -70,8 +71,10 @@ SOURCES_WITH_HEADERS = \
 	src/drivers/qre1113.c \
 	src/drivers/i2c.c \
 	src/drivers/vl53l0x.c \
+	src/drivers/millis.c \
 	src/app/drive.c \
 	src/app/line.c \
+	src/app/timer.c \
 	src/app/enemy.c \
 	external/printf/printf.c \
 
