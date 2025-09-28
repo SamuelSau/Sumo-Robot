@@ -15,6 +15,7 @@
 #include "common/assert_handler.h"
 #include "common/defines.h"
 #include "common/trace.h"
+#include "common/enum_to_string.h"
 #include <msp430.h>
 
 static void test_assert(void);
@@ -344,7 +345,7 @@ static void test_line(void)
     trace_init();
     line_init();
     while (1) {
-        TRACE("Line %u", line_get());
+        TRACE("Line %u", line_to_string(line_get()));
         BUSY_WAIT_ms(1000);
     }
 }
@@ -451,7 +452,7 @@ void test_enemy(void)
     enemy_init();
     while (1) {
         struct enemy enemy = enemy_get();
-        TRACE("%s %s", enemy_pos_str(enemy.position), enemy_range_str(enemy.range));
+        TRACE("%s %s", enemy_pos_to_string(enemy.position), enemy_range_to_string(enemy.range));
         BUSY_WAIT_ms(1000);
     }
 }

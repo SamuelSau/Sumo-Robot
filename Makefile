@@ -60,6 +60,7 @@ SOURCES_WITH_HEADERS = \
 	src/common/ring_buffer.c \
 	src/common/trace.c \
 	src/common/sleep.c \
+	src/common/enum_to_string.c \
 	src/drivers/mcu_init.c \
   	src/drivers/uart.c \
 	src/drivers/led.c \
@@ -130,7 +131,7 @@ CPPCHECK_FLAGS = \
 MCU = msp430g2553
 WFLAGS = -Wall -Wextra -Werror -Wshadow
 CFLAGS = -mmcu=$(MCU) $(WFLAGS) -fshort-enums $(addprefix -I,$(INCLUDE_DIRS)) $(DEFINES) -Og -g
-LDFLAGS = -mmcu=$(MCU) $(DEFINES) $(addprefix -L,$(LIB_DIRS))
+LDFLAGS = -mmcu=$(MCU) $(DEFINES) $(addprefix -L,$(LIB_DIRS)) $(addprefix -I,$(INCLUDE_DIRS))
 
 # Build
 ## Linking
