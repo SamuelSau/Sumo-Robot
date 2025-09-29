@@ -2,6 +2,7 @@
 
 #include <stdint.h>
 
+#if defined(NSUMO) || defined(LAUNCHPAD)
 #define ASSERT(expression)                                                                         \
     do {                                                                                           \
         if (!(expression)) {                                                                       \
@@ -10,7 +11,14 @@
             assert_handler(pc);                                                                    \
         }                                                                                          \
     } while (0)
-
+#else // Host
+#define ASSERT(expression)                                                                         \
+    do {                                                                                           \
+        if (!(expression)) {                                                                       \
+            assert_handler(0);                                                                     \
+        }                                                                                          \
+    } while (0)
+#endif
 // TODO: Decide what this should do
 #define ASSERT_INTERRUPT(expression)                                                               \
     do {                                                                                           \

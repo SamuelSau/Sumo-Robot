@@ -53,12 +53,14 @@ ADDR2LINE = $(MSPGCC_BIN_DIR)/msp430-elf-addr2line
 
 
 # Files
-TARGET = $(BUILD_DIR)$(TARGET_HW)/bin/$(TARGET_NAME)
+TARGET = $(BUILD_DIR)/$(TARGET_HW)/bin/$(TARGET_NAME)
 
 SOURCES_WITH_HEADERS = \
 	src/common/assert_handler.c \
 	src/common/ring_buffer.c \
 	src/common/trace.c \
+	src/common/sleep.c \
+	src/common/enum_to_string.c \
 	src/drivers/mcu_init.c \
   	src/drivers/uart.c \
 	src/drivers/led.c \
@@ -70,9 +72,18 @@ SOURCES_WITH_HEADERS = \
 	src/drivers/qre1113.c \
 	src/drivers/i2c.c \
 	src/drivers/vl53l0x.c \
+	src/drivers/millis.c \
 	src/app/drive.c \
 	src/app/line.c \
+	src/app/timer.c \
 	src/app/enemy.c \
+	src/app/state_machine.c \
+	src/app/state_wait.c \
+	src/app/state_search.c \
+	src/app/state_attack.c \
+	src/app/state_retreat.c \
+	src/app/state_manual.c \
+	src/app/input_history.c \
 	external/printf/printf.c \
 
 ifndef TEST
@@ -102,6 +113,8 @@ DEFINES = \
 	  $(HW_DEFINE) \
 	  $(TEST_DEFINE) \
 	  -DPRINTF_INCLUDE_CONFIG_H \
+	  -DDISABLE_ENUM_STRINGS \
+	  -DDISABLE_TRACE \
 	
 #Static Analysis - Skip over checking MSP430 helper headers due to checking every ifdefs...
 CPPCHECK_INCLUDES = ./src ./ ./external
@@ -121,13 +134,14 @@ CPPCHECK_FLAGS = \
 	--suppress=arrayIndexOutOfBounds \
 	--suppress=badBitmaskCheck \
 	--suppress=knownConditionTrueFalse \
+	--suppress=constParameterPointer \
 	$(addprefix -I,$(CPPCHECK_INCLUDES)) \
 
 # Flags
 MCU = msp430g2553
 WFLAGS = -Wall -Wextra -Werror -Wshadow
 CFLAGS = -mmcu=$(MCU) $(WFLAGS) -fshort-enums $(addprefix -I,$(INCLUDE_DIRS)) $(DEFINES) -Og -g
-LDFLAGS = -mmcu=$(MCU) $(DEFINES) $(addprefix -L,$(LIB_DIRS))
+LDFLAGS = -mmcu=$(MCU) $(DEFINES) $(addprefix -L,$(LIB_DIRS)) $(addprefix -I,$(INCLUDE_DIRS))
 
 # Build
 ## Linking

@@ -6,6 +6,8 @@
 #include <assert.h>
 #include <msp430.h>
 
+#ifndef DISABLE_IR_REMOTE
+
 #define TICKS_PER_ms (SMCLK / TIMER_DIVIDER_ID3 / 1000u)
 #define TIMER_INTERRUPT_ms (1u)
 #define TIMER_INTERRUPT_TICKS (TICKS_PER_ms * TIMER_INTERRUPT_ms)
@@ -13,8 +15,8 @@
 static_assert(TIMER_INTERRUPT_TICKS <= 0xFFFF, "Ticks too large");
 
 #define IR_CMD_BUFFER_ELEM_CNT (10u)
-static uint8_t buffer[IR_CMD_BUFFER_ELEM_CNT];
-static struct ring_buffer ir_cmd_buffer = { .buffer = buffer, .size = IR_CMD_BUFFER_ELEM_CNT };
+
+STATIC_RING_BUFFER(ir_cmd_buffer, IR_CMD_BUFFER_ELEM_CNT, uint8_t);
 
 static union {
     struct
@@ -33,7 +35,7 @@ static union {
 static uint8_t timer_ms = 0;
 static uint16_t pulse_count = 0;
 
-static void timer_init(void)
+static void ir_timer_init(void)
 { /* Configure timer to trigger interrupt after TIMER_INTERRUPT_TICKS
    * TASSEL_2: SMCLK
    * ID_3: Input divider 8 */
@@ -41,13 +43,13 @@ static void timer_init(void)
     TA1CCR0 = TIMER_INTERRUPT_TICKS;
     TA1CCTL0 = CCIE;
 }
-static void timer_start(void)
+static void ir_timer_start(void)
 {
     TA1CTL = (TA1CTL & ~TIMER_MC_MASK) + MC_1 + TACLR;
     timer_ms = 0;
 }
 
-static void timer_stop(void)
+static void ir_timer_stop(void)
 {
     // MC_0: Stop counter
     TA1CTL = (TA1CTL & ~TIMER_MC_MASK) | MC_0;
@@ -84,7 +86,7 @@ static inline bool is_message_pulse(uint16_t pulse)
 
 static void isr_pulse(void)
 {
-    timer_stop();
+    ir_timer_stop();
     pulse_count++;
 
     if (!is_valid_pulse(pulse_count, timer_ms)) {
@@ -97,10 +99,10 @@ static void isr_pulse(void)
     }
 
     if (is_message_pulse(pulse_count)) {
-        ring_buffer_put(&ir_cmd_buffer, ir_message.decoded.cmd);
+        ring_buffer_put(&ir_cmd_buffer, &ir_message.decoded.cmd);
     }
 
-    timer_start();
+    ir_timer_start();
 }
 
 INTERRUPT_FUNCTION(TIMER1_A0_VECTOR) isr_timer_a0(void)
@@ -108,70 +110,32 @@ INTERRUPT_FUNCTION(TIMER1_A0_VECTOR) isr_timer_a0(void)
     if (timer_ms < TIMER_TIMEOUT_ms) {
         timer_ms++;
     } else {
-        timer_stop();
+        ir_timer_stop();
         pulse_count = 0;
         ir_message.raw = 0;
         timer_ms = 0;
     }
 }
+#endif // DISABLE_IR_REMOTE
 
 void ir_remote_init(void)
 {
     io_configure_interrupt(IO_IR_REMOTE, IO_TRIGGER_RISING, isr_pulse);
     io_enable_interrupt(IO_IR_REMOTE);
-    timer_init();
+    ir_timer_init();
 }
 
 ir_cmd_e ir_remote_get_cmd(void)
 {
+#ifndef DISABLE_IR_REMOTE
     io_disable_interrupt(IO_IR_REMOTE);
     ir_cmd_e cmd = IR_CMD_NONE;
     if (!ring_buffer_empty(&ir_cmd_buffer)) {
-        cmd = ring_buffer_get(&ir_cmd_buffer);
+        ring_buffer_get(&ir_cmd_buffer, &cmd);
     }
     io_enable_interrupt(IO_IR_REMOTE);
     return cmd;
-}
-
-const char *ir_remote_cmd_to_string(ir_cmd_e cmd)
-{
-    switch (cmd) {
-    case IR_CMD_0:
-        return "0";
-    case IR_CMD_1:
-        return "1";
-    case IR_CMD_2:
-        return "2";
-    case IR_CMD_3:
-        return "3";
-    case IR_CMD_4:
-        return "4";
-    case IR_CMD_5:
-        return "5";
-    case IR_CMD_6:
-        return "6";
-    case IR_CMD_7:
-        return "7";
-    case IR_CMD_8:
-        return "8";
-    case IR_CMD_9:
-        return "9";
-    case IR_CMD_STAR:
-        return "STAR";
-    case IR_CMD_HASH:
-        return "HASH";
-    case IR_CMD_UP:
-        return "UP";
-    case IR_CMD_DOWN:
-        return "DOWN";
-    case IR_CMD_LEFT:
-        return "LEFT";
-    case IR_CMD_RIGHT:
-        return "RIGHT";
-    case IR_CMD_OK:
-        return "OK";
-    case IR_CMD_NONE:
-        return "NONE";
-    }
-    return "UNKNOWN";
+#else
+    return IR_CMD_NONE;
+#endif
 }
