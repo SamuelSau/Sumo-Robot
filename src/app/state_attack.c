@@ -86,7 +86,4 @@ void state_attack_enter(struct state_attack_data *data, state_e from, state_even
     }
 }
 
-void state_attack_init(struct state_attack_data *data)
-{
-    data->state = ATTACK_STATE_FORWARD;
-}
+void state_attack_init(struct state_attack_data *data) { data->state = ATTACK_STATE_FORWARD; }

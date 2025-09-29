@@ -193,5 +193,4 @@ const char *state_event_to_string(state_event_e event)
     return "";
 }
 
-
 #endif // DISABLE_ENUM_STRINGS

@@ -5,8 +5,7 @@
 
 #include "app/state_common.h"
 
-typedef enum
-{
+typedef enum {
     RETREAT_STATE_REVERSE,
     RETREAT_STATE_FORWARD,
     RETREAT_STATE_ROTATE_LEFT,

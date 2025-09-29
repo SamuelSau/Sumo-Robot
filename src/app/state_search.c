@@ -81,7 +81,4 @@ void state_search_enter(struct state_search_data *data, state_e from, state_even
     }
 }
 
-void state_search_init(struct state_search_data *data)
-{
-    data->state = SEARCH_STATE_ROTATE;
-}
+void state_search_init(struct state_search_data *data) { data->state = SEARCH_STATE_ROTATE; }

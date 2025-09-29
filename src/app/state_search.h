@@ -5,8 +5,7 @@
 
 // Drive around until enemy is found (or line is detected)
 
-typedef enum
-{
+typedef enum {
     SEARCH_STATE_ROTATE,
     SEARCH_STATE_FORWARD
 } search_state_e;

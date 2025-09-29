@@ -83,6 +83,7 @@ SOURCES_WITH_HEADERS = \
 	src/app/state_attack.c \
 	src/app/state_retreat.c \
 	src/app/state_manual.c \
+	src/app/input_history.c \
 	external/printf/printf.c \
 
 ifndef TEST

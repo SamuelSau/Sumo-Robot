@@ -5,8 +5,7 @@
 
 // Drive towards detected enemy
 
-typedef enum
-{
+typedef enum {
     ATTACK_STATE_FORWARD,
     ATTACK_STATE_LEFT,
     ATTACK_STATE_RIGHT
