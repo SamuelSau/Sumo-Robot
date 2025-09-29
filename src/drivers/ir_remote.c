@@ -6,6 +6,8 @@
 #include <assert.h>
 #include <msp430.h>
 
+#ifndef DISABLE_IR_REMOTE
+
 #define TICKS_PER_ms (SMCLK / TIMER_DIVIDER_ID3 / 1000u)
 #define TIMER_INTERRUPT_ms (1u)
 #define TIMER_INTERRUPT_TICKS (TICKS_PER_ms * TIMER_INTERRUPT_ms)
@@ -33,7 +35,7 @@ static union {
 static uint8_t timer_ms = 0;
 static uint16_t pulse_count = 0;
 
-static void timer_init(void)
+static void ir_timer_init(void)
 { /* Configure timer to trigger interrupt after TIMER_INTERRUPT_TICKS
    * TASSEL_2: SMCLK
    * ID_3: Input divider 8 */
@@ -41,13 +43,13 @@ static void timer_init(void)
     TA1CCR0 = TIMER_INTERRUPT_TICKS;
     TA1CCTL0 = CCIE;
 }
-static void timer_start(void)
+static void ir_timer_start(void)
 {
     TA1CTL = (TA1CTL & ~TIMER_MC_MASK) + MC_1 + TACLR;
     timer_ms = 0;
 }
 
-static void timer_stop(void)
+static void ir_timer_stop(void)
 {
     // MC_0: Stop counter
     TA1CTL = (TA1CTL & ~TIMER_MC_MASK) | MC_0;
@@ -84,7 +86,7 @@ static inline bool is_message_pulse(uint16_t pulse)
 
 static void isr_pulse(void)
 {
-    timer_stop();
+    ir_timer_stop();
     pulse_count++;
 
     if (!is_valid_pulse(pulse_count, timer_ms)) {
@@ -100,7 +102,7 @@ static void isr_pulse(void)
         ring_buffer_put(&ir_cmd_buffer, &ir_message.decoded.cmd);
     }
 
-    timer_start();
+    ir_timer_start();
 }
 
 INTERRUPT_FUNCTION(TIMER1_A0_VECTOR) isr_timer_a0(void)
@@ -108,22 +110,24 @@ INTERRUPT_FUNCTION(TIMER1_A0_VECTOR) isr_timer_a0(void)
     if (timer_ms < TIMER_TIMEOUT_ms) {
         timer_ms++;
     } else {
-        timer_stop();
+        ir_timer_stop();
         pulse_count = 0;
         ir_message.raw = 0;
         timer_ms = 0;
     }
 }
+#endif // DISABLE_IR_REMOTE
 
 void ir_remote_init(void)
 {
     io_configure_interrupt(IO_IR_REMOTE, IO_TRIGGER_RISING, isr_pulse);
     io_enable_interrupt(IO_IR_REMOTE);
-    timer_init();
+    ir_timer_init();
 }
 
 ir_cmd_e ir_remote_get_cmd(void)
 {
+#ifndef DISABLE_IR_REMOTE
     io_disable_interrupt(IO_IR_REMOTE);
     ir_cmd_e cmd = IR_CMD_NONE;
     if (!ring_buffer_empty(&ir_cmd_buffer)) {
@@ -131,4 +135,7 @@ ir_cmd_e ir_remote_get_cmd(void)
     }
     io_enable_interrupt(IO_IR_REMOTE);
     return cmd;
+#else
+    return IR_CMD_NONE;
+#endif
 }

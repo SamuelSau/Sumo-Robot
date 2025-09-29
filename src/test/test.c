@@ -204,7 +204,7 @@ static void test_pwm(void)
 			TRACE("Set duty cycle to %d for %d ms", duty_cycles[i], wait_time);
 			pwm_set_duty_cycle(PWM_TB6612FNG_LEFT, duty_cycles[i]);
 			pwm_set_duty_cycle(PWM_TB6612FNG_RIGHT, duty_cycles[i]);
-			BUSY_WAIT_ms(3000);
+			BUSY_WAIT_ms(wait_time);
 		}
 	}
 }
@@ -452,6 +452,7 @@ void test_enemy(void)
     enemy_init();
     while (1) {
         struct enemy enemy = enemy_get();
+	UNUSED(enemy);
         TRACE("%s %s", enemy_pos_to_string(enemy.position), enemy_range_to_string(enemy.range));
         BUSY_WAIT_ms(1000);
     }

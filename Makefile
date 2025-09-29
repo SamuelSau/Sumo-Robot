@@ -114,6 +114,7 @@ DEFINES = \
 	  $(TEST_DEFINE) \
 	  -DPRINTF_INCLUDE_CONFIG_H \
 	  -DDISABLE_ENUM_STRINGS \
+	  -DDISABLE_TRACE \
 	
 #Static Analysis - Skip over checking MSP430 helper headers due to checking every ifdefs...
 CPPCHECK_INCLUDES = ./src ./ ./external
