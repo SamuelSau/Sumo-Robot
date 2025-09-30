@@ -21,7 +21,7 @@ https://hub.docker.com/repository/docker/samloveswater/msp430-gcc-9.3.1.11/gener
 
 ## make (Makefile)
 
-Code targets specifically the MSP430G2553 and uses TI's compiler msp430-gcc. Refer to [msp430-gcc-open](https://www.ti.com/tool/MSP430-GCC-OPENSOURCE) for what is utilized.
+Code targets specifically the MSP430G2553 and uses TI's compiler msp430-gcc. Refer to [msp430-gcc-open](https://www.ti.com/tool/MSP430-GCC-OPENSOURCE) for what is utilized. The Makefile was built from scratch and used parts of the TI compiler for the project, however not CCStudioIDE.
 
 ## Assert
 In this implementation, the assert is first triggered at a breakpoint
